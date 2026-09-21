@@ -1,0 +1,30 @@
+I am running LLM inference on aalto triton using models from the shared HuggingFace cache at /scratch/shareddata/dldata/huggingface-hub-cache. 
+I want to load openai/gpt-oss-20b in a SLURM job with offline mode enabled, as recommended for using the shared cache.
+I set:
+export TRANSFORMERS_OFFLINE=1
+export HF_HUB_OFFLINE=1
+Then loaded the model in Python with:
+
+model = AutoModelForCausalLM.from_pretrained(
+    "openai/gpt-oss-20b",
+    torch_dtype="auto",
+    device_map="auto"
+)
+
+The job fails with:
+
+huggingface_hub.errors.OfflineModeIsEnabled: Cannot reach
+https://huggingface.co/api/models/kernels-community/gpt-oss-triton-kernels/tree/main:
+offline mode is enabled.
+
+It seems the gpt-oss model requires a triton kernel package at load time (kernels-community/gpt-oss-triton-kernels). 
+The library is trying to fetch it from the internet rather than reading from the local cache.
+However, I can see that both the model and the kernel are already present in the shared cache:
+
+/scratch/shareddata/dldata/huggingface-hub-cache/hub/models--openai--gpt-oss-20b
+/scratch/shareddata/dldata/huggingface-hub-cache/hub/models--kernels-community--gpt-oss-triton-kernels
+
+
+What do I need? Could you advise on what environment variable or configuration is needed so that the kernels library resolves gpt-oss-triton-kernels from the local cache 
+rather than trying to reach the internet? Or is there something additional needed on the cache setup side to make this model work in offline mode?
+

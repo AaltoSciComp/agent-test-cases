@@ -1,0 +1,3 @@
+Could you please help me install the python env for Vero (https://github.com/zlab-princeton/vero/tree/main) 
+running on B300 GPUs? 
+It needs to use flash-attn on B300.
